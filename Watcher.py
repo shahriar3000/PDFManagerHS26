@@ -1,4 +1,5 @@
-import subprocess
+import os
+
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import time
@@ -14,7 +15,6 @@ class Watcher:
         self.control = control
 
     def run(self):
-        print("hey")
         event_Handler = EventHandler(self.control)
 
         #tells watchdog to watch directory and let handler deal with it
@@ -27,6 +27,16 @@ class Watcher:
         finally:
             self.observer.stop()
             self.observer.join()
+
+    def scan_existing_files(self):
+        for file_name in os.listdir(self.DIRECTORY_TO_WATCH):
+            #only pdf files
+            if not file_name.endswith(".pdf"):
+                continue
+
+            #yield returns value, but pauses where function stopped
+            #unlike return, which returns value, but ends the function
+            yield os.path.join(self.DIRECTORY_TO_WATCH, file_name)
 
 
 #Todo: The Logger should take care of printing or logging changes
@@ -56,10 +66,12 @@ def on_createddd(event):
 class EventHandler(FileSystemEventHandler):
     def __init__(self, control):
         self.control = control
-        print("yo")
+
     def on_created(self, event):
+        #watcher waits for 2 seconds for the file to be fully created, then tells control.
+        #Otherwise, classify will try open with pdfplumber when the file isn't there yet.
+        time.sleep(1)
         if not event.is_directory:
-            print("Here we are")
             self.control.file_created(event.src_path)
 
 

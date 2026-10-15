@@ -1,3 +1,6 @@
+import os.path
+import time
+
 import pdfplumber
 from pathlib import Path
 
@@ -12,22 +15,23 @@ class Classifier:
 
         for filename_beginning, data in self.keywords.items():
             if file_name.startswith(filename_beginning):
+                #print(filename_beginning)
                 if self.check_category_PDF(file_path, data["keywords"]):
                     print(f"matching file: ", file_name, filename_beginning)
                     return data["category"]
         return None
 
+    #opens pdf with pdfplumber and searches for words from the list given
     def check_category_PDF(self, file_path, target_words):
-
+        #print(target_words)
+        #print(file_path)
         try:
 
             with pdfplumber.open(file_path) as pdf:
                 if not pdf.pages:
                     return False
-
                 first_page = pdf.pages[0]
                 text = first_page.extract_text()
-
                 #when text is not empty
                 if text:
                     for word in target_words:
@@ -38,3 +42,16 @@ class Classifier:
             print(f"Error processing {file_path}: {e}")
 
         return False
+
+    def created_in_year(self, file_path, year):
+        try:
+            c_ti = os.path.getctime(file_path)
+            c_time = time.ctime(c_ti)
+
+            if year in c_time:
+                return True
+        except Exception as e:
+            print(f"Error processing {file_path}: {e}")
+        return False
+
+
