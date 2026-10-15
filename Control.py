@@ -33,9 +33,15 @@ class Control:
         files = watcher.scan_existing_files()
 
         for file in files:
-            if self.classifier.created_in_year(file, "2026"):
-                category = self.classifier.classify(file)
 
+            if self.classifier.check_keyword_PDF(file, "2026"):
+                category = self.classifier.classify(file)
+                #print(category)
+                if category:
+                    self.organizer.organize(category)
+            elif self.classifier.created_in_year(file, "2026"):
+                category = self.classifier.classify(file)
+                #print(category)
                 if category:
                     self.organizer.organize(category)
             elif self.classifier.created_in_year(file, "2025"):
