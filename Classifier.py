@@ -16,13 +16,14 @@ class Classifier:
         for filename_beginning, data in self.keywords.items():
             if file_name.startswith(filename_beginning):
                 #print(filename_beginning)
-                if self.check_category_PDF(file_path, data["keywords"]):
+                if self.check_keyword_PDF(file_path, data["keywords"]):
                     print(f"matching file: ", file_name, filename_beginning)
                     return data["category"]
         return None
 
     #opens pdf with pdfplumber and searches for words from the list given
-    def check_category_PDF(self, file_path, target_words):
+
+    def check_keyword_PDF(self, file_path, keyword):
         #print(target_words)
         #print(file_path)
         try:
@@ -32,12 +33,17 @@ class Classifier:
                     return False
                 first_page = pdf.pages[0]
                 text = first_page.extract_text()
-                #when text is not empty
-                if text:
-                    for word in target_words:
-                        if word in text:
-                            return True
 
+                if text:
+                    #checks if keyword is a single word e.g. "2026"
+                    if isinstance(keyword, str):
+                        if keyword in text:
+                            return True
+                    #checks if keyword is a list e.g. from config
+                    elif isinstance(keyword, list):
+                        for word in keyword:
+                            if word in text:
+                                return True
         except Exception as e:
             print(f"Error processing {file_path}: {e}")
 
@@ -53,5 +59,3 @@ class Classifier:
         except Exception as e:
             print(f"Error processing {file_path}: {e}")
         return False
-
-
