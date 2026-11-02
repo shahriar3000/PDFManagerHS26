@@ -53,7 +53,7 @@ class Control:
                 main_file = config.main_directory[year]
 
                 if category:
-                    self.organizer.organize(category, year, main_file)
+                    self.organizer.organize(category, year, main_file, file)
 
 
 
