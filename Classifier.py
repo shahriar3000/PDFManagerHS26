@@ -70,3 +70,6 @@ class Classifier:
         except Exception as e:
             print(f"Error processing {file_path}: {e}")
         return False
+
+    def check_for_copy(self, file_path):
+        print("Test for copy")
