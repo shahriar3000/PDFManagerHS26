@@ -10,9 +10,20 @@ class Classifier:
     def __init__(self, keywords):
         self.keywords = keywords
 
+        for filename, data in keywords.items():
+            required = {"category", "semester", "keywords"}
+
+            if not required.issubset(data):
+                raise ValueError(
+                    f"Invalid configuration for '{filename}'."
+                    f"Missing: {required - data.keys()}"
+                )
+
+    # returns
     def classify(self, file_path):
         file_name = Path(file_path).name
 
+        #validates configuration of new data in config
         for filename_beginning, data in self.keywords.items():
             if file_name.startswith(filename_beginning):
                 #print(filename_beginning)
@@ -21,8 +32,7 @@ class Classifier:
                     return data["category"]
         return None
 
-    #opens pdf with pdfplumber and searches for words from the list given
-
+    # opens pdf with pdfplumber and searches for words from the list given
     def check_keyword_PDF(self, file_path, keyword):
         #print(target_words)
         #print(file_path)
@@ -49,6 +59,7 @@ class Classifier:
 
         return False
 
+    # checks for the year of creation (download)
     def created_in_year(self, file_path, year):
         try:
             c_ti = os.path.getctime(file_path)
